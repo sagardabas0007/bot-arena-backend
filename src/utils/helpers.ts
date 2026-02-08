@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'crypto';
+import crypto from 'crypto';
 
 export function generateId(): string {
   return crypto.randomUUID();
