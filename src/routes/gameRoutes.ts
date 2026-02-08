@@ -4,19 +4,23 @@ import { validateGameCreate, validateGameJoin, validateMove } from '../middlewar
 
 const router = Router();
 
-// POST /api/game/create - Create a new game
+// POST /api/game/create OR /api/games - Create a new game
 router.post('/create', validateGameCreate, GameController.createGame);
+router.post('/', validateGameCreate, GameController.createGame);
 
-// POST /api/game/join - Join a bot to a game
+// POST /api/game/join OR /api/games/join - Join a bot to a game
 router.post('/join', validateGameJoin, GameController.joinGame);
 
-// GET /api/game/:id - Get game state
+// GET /api/game/:id OR /api/games/:id - Get game state
 router.get('/:id', GameController.getGame);
 
-// POST /api/game/:id/move - Submit a move
+// POST /api/game/:id/move OR /api/games/:id/move - Submit a move
 router.post('/:id/move', validateMove, GameController.submitMove);
 
-// GET /api/game/:id/leaderboard - Get game leaderboard
+// POST /api/games/:id/join - Join a specific game
+router.post('/:id/join', validateGameJoin, GameController.joinGame);
+
+// GET /api/game/:id/leaderboard OR /api/games/:id/leaderboard - Get game leaderboard
 router.get('/:id/leaderboard', GameController.getGameLeaderboard);
 
 export { router as gameRoutes };

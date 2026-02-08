@@ -44,6 +44,18 @@ app.use('/api/bot', botRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/agent', agentRoutes);
 
+// Add plural aliases for frontend compatibility
+app.use('/api/games', gameRoutes);
+app.use('/api/arenas', arenaRoutes);
+app.use('/api/bots', botRoutes);
+
+// Add leaderboard route
+app.get('/api/leaderboard', async (req, res, next) => {
+  // Forward to bot leaderboard
+  req.url = '/leaderboard';
+  botRoutes(req, res, next);
+});
+
 // Error handling middleware (must be after routes)
 app.use(errorHandler);
 
