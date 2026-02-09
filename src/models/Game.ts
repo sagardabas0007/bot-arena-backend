@@ -2,7 +2,7 @@ import { prisma } from '../config/database';
 import { Game as PrismaGame, GameStatus, Prisma } from '@prisma/client';
 
 export interface GameWithRelations extends PrismaGame {
-  arena: {
+  Arena: {
     id: string;
     tier: number;
     name: string;
@@ -13,7 +13,7 @@ export interface GameWithRelations extends PrismaGame {
     obstacleCount: number;
     timeLimit: number;
   };
-  participants: {
+  BotGame: {
     id: string;
     botId: string;
     position: number;
@@ -24,7 +24,7 @@ export interface GameWithRelations extends PrismaGame {
     level1Time: number | null;
     level2Time: number | null;
     level3Time: number | null;
-    bot: {
+    Bot: {
       id: string;
       walletAddress: string;
       username: string;
@@ -55,10 +55,10 @@ export const GameModel = {
     return prisma.game.findUnique({
       where: { id },
       include: {
-        arena: true,
-        participants: {
+        Arena: true,
+        BotGame: {
           include: {
-            bot: {
+            Bot: {
               select: {
                 id: true,
                 walletAddress: true,
@@ -80,10 +80,10 @@ export const GameModel = {
     return prisma.game.findMany({
       where: { status },
       include: {
-        arena: true,
-        participants: {
+        Arena: true,
+        BotGame: {
           include: {
-            bot: {
+            Bot: {
               select: {
                 id: true,
                 walletAddress: true,
@@ -150,10 +150,10 @@ export const GameModel = {
         },
       },
       include: {
-        arena: true,
-        participants: {
+        Arena: true,
+        BotGame: {
           include: {
-            bot: {
+            Bot: {
               select: {
                 id: true,
                 walletAddress: true,
@@ -164,7 +164,7 @@ export const GameModel = {
           },
         },
         _count: {
-          select: { participants: true },
+          select: { BotGame: true },
         },
       },
       orderBy: { createdAt: 'desc' },

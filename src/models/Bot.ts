@@ -10,10 +10,10 @@ export interface BotWithStats extends PrismaBot {
     completionTime: number | null;
     collisions: number;
     eliminated: boolean;
-    game: {
+    Game: {
       id: string;
       status: string;
-      arena: {
+      Arena: {
         name: string;
         tier: number;
       };
@@ -108,11 +108,11 @@ export const BotModel = {
     const bot = await prisma.bot.findUnique({
       where: { walletAddress },
       include: {
-        gamesPlayed: {
+        BotGame: {
           include: {
-            game: {
+            Game: {
               include: {
-                arena: {
+                Arena: {
                   select: {
                     name: true,
                     tier: true,
@@ -137,7 +137,7 @@ export const BotModel = {
     return {
       ...bot,
       winRate,
-      recentGames: (bot as any).gamesPlayed,
+      recentGames: (bot as any).BotGame,
     };
   },
 };

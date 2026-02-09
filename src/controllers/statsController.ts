@@ -34,9 +34,9 @@ export const StatsController = {
       const gamesByArena = await prisma.botGame.findMany({
         where: { botId: bot.id },
         include: {
-          game: {
+          Game: {
             include: {
-              arena: {
+              Arena: {
                 select: {
                   tier: true,
                   name: true,
@@ -53,7 +53,7 @@ export const StatsController = {
         {
           tier: number;
           name: string;
-          gamesPlayed: number;
+          BotGame: number;
           wins: number;
           avgCollisions: number;
           totalCollisions: number;
@@ -61,21 +61,21 @@ export const StatsController = {
       > = {};
 
       for (const bg of gamesByArena) {
-        const tier = bg.game.arena.tier;
+        const tier = bg.Game.Arena.tier;
         if (!arenaStats[tier]) {
           arenaStats[tier] = {
             tier,
-            name: bg.game.arena.name,
-            gamesPlayed: 0,
+            name: bg.Game.Arena.name,
+            BotGame: 0,
             wins: 0,
             avgCollisions: 0,
             totalCollisions: 0,
           };
         }
-        arenaStats[tier].gamesPlayed++;
+        arenaStats[tier].BotGame++;
         arenaStats[tier].totalCollisions += bg.collisions;
 
-        if (bg.game.winnerId === bot.id) {
+        if (bg.Game.winnerId === bot.id) {
           arenaStats[tier].wins++;
         }
       }
@@ -84,8 +84,8 @@ export const StatsController = {
       for (const tier in arenaStats) {
         const stats = arenaStats[tier];
         stats.avgCollisions =
-          stats.gamesPlayed > 0
-            ? Math.round((stats.totalCollisions / stats.gamesPlayed) * 10) / 10
+          stats.BotGame > 0
+            ? Math.round((stats.totalCollisions / stats.BotGame) * 10) / 10
             : 0;
       }
 
@@ -93,16 +93,16 @@ export const StatsController = {
       const activeGames = await prisma.botGame.findMany({
         where: {
           botId: bot.id,
-          game: {
+          Game: {
             status: {
               notIn: [GameStatus.COMPLETED, GameStatus.CANCELLED],
             },
           },
         },
         include: {
-          game: {
+          Game: {
             include: {
-              arena: {
+              Arena: {
                 select: {
                   name: true,
                   tier: true,
@@ -128,9 +128,9 @@ export const StatsController = {
         orderBy: { completionTime: 'asc' },
         select: {
           completionTime: true,
-          game: {
+          Game: {
             select: {
-              arena: {
+              Arena: {
                 select: { name: true, tier: true },
               },
             },
@@ -141,7 +141,7 @@ export const StatsController = {
       res.status(200).json({
         success: true,
         data: {
-          bot: {
+          Bot: {
             id: bot.id,
             walletAddress: bot.walletAddress,
             username: bot.username,
@@ -163,29 +163,29 @@ export const StatsController = {
             bestCompletionTime: bestTime
               ? {
                   time: bestTime.completionTime,
-                  arena: bestTime.game.arena,
+                  Arena: bestTime.Game.Arena,
                 }
               : null,
             arenaBreakdown: Object.values(arenaStats).sort((a, b) => a.tier - b.tier),
           },
           activeGames: activeGames.map((ag) => ({
             gameId: ag.gameId,
-            arenaName: ag.game.arena.name,
-            arenaTier: ag.game.arena.tier,
-            status: ag.game.status,
+            arenaName: ag.Game.Arena.name,
+            arenaTier: ag.Game.Arena.tier,
+            status: ag.Game.status,
             position: ag.position,
             eliminated: ag.eliminated,
           })),
           recentGames: botWithHistory.recentGames.map((rg: any) => ({
             gameId: rg.gameId,
-            arenaName: rg.game.arena.name,
-            arenaTier: rg.game.arena.tier,
+            arenaName: rg.Game.Arena.name,
+            arenaTier: rg.Game.Arena.tier,
             position: rg.position,
             completionTime: rg.completionTime,
             collisions: rg.collisions,
             eliminated: rg.eliminated,
-            status: rg.game.status,
-            playedAt: rg.game.createdAt,
+            status: rg.Game.status,
+            playedAt: rg.Game.createdAt,
           })),
         },
       });

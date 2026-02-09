@@ -3,7 +3,7 @@ import { Agent as PrismaAgent } from '@prisma/client';
 import crypto from 'crypto';
 
 export interface AgentWithBot extends PrismaAgent {
-  bot: {
+  Bot: {
     id: string;
     walletAddress: string;
     username: string;
@@ -41,7 +41,7 @@ export const AgentModel = {
           description: description || null,
         },
         include: {
-          bot: true,
+          Bot: true,
         },
       });
 
@@ -57,7 +57,7 @@ export const AgentModel = {
   async findByApiKey(apiKey: string): Promise<AgentWithBot | null> {
     return prisma.agent.findUnique({
       where: { apiKey },
-      include: { bot: true },
+      include: { Bot: true },
     }) as Promise<AgentWithBot | null>;
   },
 
@@ -67,7 +67,7 @@ export const AgentModel = {
   async findById(id: string): Promise<AgentWithBot | null> {
     return prisma.agent.findUnique({
       where: { id },
-      include: { bot: true },
+      include: { Bot: true },
     }) as Promise<AgentWithBot | null>;
   },
 

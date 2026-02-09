@@ -119,7 +119,7 @@ export const AgentGameService = {
     const gameState = GameService.getGameState(gameId);
 
     // Find the agent's participant record
-    const agentParticipant = game.participants.find((p) => p.botId === botId);
+    const agentParticipant = game.BotGame.find((p) => p.botId === botId);
     if (!agentParticipant) {
       throw new Error('Agent is not a participant in this game');
     }
@@ -129,16 +129,16 @@ export const AgentGameService = {
       status: game.status,
       currentLevel: game.currentLevel,
       prizePool: game.prizePool,
-      participantCount: game.participants.length,
+      participantCount: game.BotGame.length,
       maxParticipants: GameService.getMaxBotsPerGame(),
-      arena: {
-        id: game.arena.id,
-        name: game.arena.name,
-        tier: game.arena.tier,
-        difficulty: game.arena.difficulty,
-        gridRows: game.arena.gridRows,
-        gridCols: game.arena.gridCols,
-        timeLimit: game.arena.timeLimit,
+      Arena: {
+        id: game.Arena.id,
+        name: game.Arena.name,
+        tier: game.Arena.tier,
+        difficulty: game.Arena.difficulty,
+        gridRows: game.Arena.gridRows,
+        gridCols: game.Arena.gridCols,
+        timeLimit: game.Arena.timeLimit,
       },
       agent: {
         botId: agentParticipant.botId,
@@ -156,7 +156,7 @@ export const AgentGameService = {
     if (gameState) {
       const currentPosition = gameState.botPositions.get(botId);
       const elapsedMs = Date.now() - gameState.startTime;
-      const timeLimitMs = game.arena.timeLimit * 1000;
+      const timeLimitMs = game.Arena.timeLimit * 1000;
 
       result.liveData = {
         grid: gameState.grid,
@@ -172,10 +172,10 @@ export const AgentGameService = {
 
     // Include winner info if game is completed
     if (game.status === GameStatus.COMPLETED && game.winnerId) {
-      const winnerParticipant = game.participants.find((p) => p.botId === game.winnerId);
+      const winnerParticipant = game.BotGame.find((p) => p.botId === game.winnerId);
       result.winner = {
         botId: game.winnerId,
-        username: winnerParticipant?.bot.username,
+        username: winnerParticipant?.Bot.username,
         isMe: game.winnerId === botId,
       };
     }
@@ -242,7 +242,7 @@ export const AgentGameService = {
     const games = await prisma.game.findMany({
       where,
       include: {
-        arena: {
+        Arena: {
           select: {
             id: true,
             name: true,
@@ -255,7 +255,7 @@ export const AgentGameService = {
           },
         },
         _count: {
-          select: { participants: true },
+          select: { BotGame: true },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -263,8 +263,8 @@ export const AgentGameService = {
 
     return games.map((g) => ({
       gameId: g.id,
-      arena: g.arena,
-      participantCount: g._count.participants,
+      Arena: g.Arena,
+      participantCount: g._count.BotGame,
       maxParticipants: GameService.getMaxBotsPerGame(),
       prizePool: g.prizePool,
       createdAt: g.createdAt,
@@ -278,7 +278,7 @@ export const AgentGameService = {
     const game = await GameModel.findById(gameId);
     if (!game) return;
 
-    const participantCount = game.participants.length;
+    const participantCount = game.BotGame.length;
     const maxBots = GameService.getMaxBotsPerGame();
 
     // Auto-start if game is at capacity

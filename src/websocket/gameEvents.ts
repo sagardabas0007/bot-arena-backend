@@ -9,7 +9,7 @@ export function emitGameStart(
   grid: GameGrid
 ): void {
   logger.info(`Game ${gameId} Level ${level} starting`);
-  io.to(`game:${gameId}`).emit('game:start', {
+  io.to(`Game:${gameId}`).emit('Game:start', {
     gameId,
     level,
     startTime: Date.now(),
@@ -22,7 +22,7 @@ export function emitGameUpdate(
   gameId: string,
   botPositions: BotPosition[]
 ): void {
-  io.to(`game:${gameId}`).emit('game:update', { gameId, botPositions });
+  io.to(`Game:${gameId}`).emit('Game:update', { gameId, botPositions });
 }
 
 export function emitMoveResult(
@@ -31,7 +31,7 @@ export function emitMoveResult(
   botId: string,
   result: { success: boolean; isCollision: boolean; newPosition: { x: number; y: number } }
 ): void {
-  io.to(`game:${gameId}`).emit('game:move_result', { botId, ...result });
+  io.to(`Game:${gameId}`).emit('Game:move_result', { botId, ...result });
 }
 
 export function emitCollision(
@@ -41,7 +41,7 @@ export function emitCollision(
   position: { x: number; y: number }
 ): void {
   logger.info(`Bot ${botId} collision in game ${gameId}`);
-  io.to(`game:${gameId}`).emit('game:collision', { botId, position });
+  io.to(`Game:${gameId}`).emit('Game:collision', { botId, position });
 }
 
 export function emitLevelComplete(
@@ -52,7 +52,7 @@ export function emitLevelComplete(
   eliminated: string[]
 ): void {
   logger.info(`Game ${gameId} Level ${level} complete. Qualified: ${qualified.length}, Eliminated: ${eliminated.length}`);
-  io.to(`game:${gameId}`).emit('game:level_complete', {
+  io.to(`Game:${gameId}`).emit('Game:level_complete', {
     level,
     qualified,
     eliminated,
@@ -66,7 +66,7 @@ export function emitWinner(
   prize: string
 ): void {
   logger.info(`Game ${gameId} winner: ${winnerId}, prize: ${prize}`);
-  io.to(`game:${gameId}`).emit('game:winner', { gameId, winnerId, prize });
+  io.to(`Game:${gameId}`).emit('Game:winner', { gameId, winnerId, prize });
 }
 
 export function emitPoolUpdate(
@@ -74,7 +74,7 @@ export function emitPoolUpdate(
   gameId: string,
   newTotal: string
 ): void {
-  io.to(`game:${gameId}`).emit('pool:update', { gameId, newTotal });
+  io.to(`Game:${gameId}`).emit('pool:update', { gameId, newTotal });
 }
 
 export function emitError(

@@ -65,13 +65,13 @@ export const GameService = {
     }
 
     // Check if game is full
-    const participantCount = game.participants.length;
+    const participantCount = game.BotGame.length;
     if (participantCount >= MAX_BOTS_PER_GAME) {
       throw new Error('Game is full');
     }
 
     // Check if bot is already in the game
-    const alreadyJoined = game.participants.some((p) => p.botId === botId);
+    const alreadyJoined = game.BotGame.some((p) => p.botId === botId);
     if (alreadyJoined) {
       throw new Error('Bot has already joined this game');
     }
@@ -93,7 +93,7 @@ export const GameService = {
     });
 
     // Update prize pool with entry fee
-    const arena = game.arena;
+    const arena = game.Arena;
     const newPrizePool = Number(game.prizePool) + Number(arena.entryFee);
     await GameModel.updatePrizePool(gameId, newPrizePool);
 
@@ -115,7 +115,7 @@ export const GameService = {
       throw new Error('Game not found');
     }
 
-    const arena = game.arena;
+    const arena = game.Arena;
     const { gridRows, gridCols, obstacleCount } = arena;
 
     // Scale obstacle count by level
@@ -134,7 +134,7 @@ export const GameService = {
     }
 
     // Get active (non-eliminated) participants
-    const activeParticipants = game.participants.filter((p) => !p.eliminated);
+    const activeParticipants = game.BotGame.filter((p) => !p.eliminated);
 
     // Initialize bot positions at (0, 0)
     const botPositions = new Map<string, Position>();
@@ -361,14 +361,14 @@ export const GameService = {
       return false;
     }
 
-    const activeParticipants = game.participants.filter((p) => !p.eliminated);
+    const activeParticipants = game.BotGame.filter((p) => !p.eliminated);
     const allFinished = activeParticipants.every((p) =>
       gameState.botFinishTimes.has(p.botId)
     );
 
     // Check timeout
     const elapsedMs = Date.now() - gameState.startTime;
-    const timeLimitMs = game.arena.timeLimit * 1000;
+    const timeLimitMs = game.Arena.timeLimit * 1000;
     const timedOut = elapsedMs >= timeLimitMs;
 
     if (allFinished || timedOut) {
@@ -404,7 +404,7 @@ export const GameService = {
       throw new Error('Game not found');
     }
 
-    const activeParticipants = game.participants.filter((p) => !p.eliminated);
+    const activeParticipants = game.BotGame.filter((p) => !p.eliminated);
     const eliminationCount = ELIMINATION_MAP[level] || 0;
 
     // Sort by finish time (including collision penalties)
@@ -457,7 +457,7 @@ export const GameService = {
   },
 
   /**
-   * Finalize a game: set winner, distribute prizes, update stats.
+   * Finalize a Game: set winner, distribute prizes, update stats.
    */
   async completeGame(gameId: string, winnerId: string) {
     const game = await GameModel.findById(gameId);
@@ -476,7 +476,7 @@ export const GameService = {
     await BotModel.updateStats(winnerId, true, winnerPrize);
 
     // Update all participants game count
-    for (const participant of game.participants) {
+    for (const participant of game.BotGame) {
       if (participant.botId !== winnerId) {
         await BotModel.updateStats(participant.botId, false, 0);
       }

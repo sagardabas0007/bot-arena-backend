@@ -59,14 +59,14 @@ export const AgentController = {
           description: agent.description,
           skillRating: agent.skillRating,
           isActive: agent.isActive,
-          bot: {
-            id: agent.bot.id,
-            username: agent.bot.username,
-            totalWins: agent.bot.totalWins,
-            totalGames: agent.bot.totalGames,
-            totalEarnings: agent.bot.totalEarnings,
-            winRate: agent.bot.totalGames > 0
-              ? Math.round((agent.bot.totalWins / agent.bot.totalGames) * 100)
+          Bot: {
+            id: agent.Bot.id,
+            username: agent.Bot.username,
+            totalWins: agent.Bot.totalWins,
+            totalGames: agent.Bot.totalGames,
+            totalEarnings: agent.Bot.totalEarnings,
+            winRate: agent.Bot.totalGames > 0
+              ? Math.round((agent.Bot.totalWins / agent.Bot.totalGames) * 100)
               : 0,
           },
           createdAt: agent.createdAt,
@@ -144,16 +144,16 @@ export const AgentController = {
       const botGames = await prisma.botGame.findMany({
         where: {
           botId,
-          game: {
+          Game: {
             status: {
               notIn: [GameStatus.COMPLETED, GameStatus.CANCELLED],
             },
           },
         },
         include: {
-          game: {
+          Game: {
             include: {
-              arena: {
+              Arena: {
                 select: {
                   id: true,
                   name: true,
@@ -161,7 +161,7 @@ export const AgentController = {
                   difficulty: true,
                 },
               },
-              _count: { select: { participants: true } },
+              _count: { select: { BotGame: true } },
             },
           },
         },
@@ -170,10 +170,10 @@ export const AgentController = {
 
       const data = botGames.map((bg) => ({
         gameId: bg.gameId,
-        status: bg.game.status,
-        currentLevel: bg.game.currentLevel,
-        arena: bg.game.arena,
-        participantCount: bg.game._count.participants,
+        status: bg.Game.status,
+        currentLevel: bg.Game.currentLevel,
+        Arena: bg.Game.Arena,
+        participantCount: bg.Game._count.BotGame,
         eliminated: bg.eliminated,
         position: bg.position,
         collisions: bg.collisions,
@@ -204,7 +204,7 @@ export const AgentController = {
         data: {
           gameId: game!.id,
           botId,
-          participantCount: game!.participants.length,
+          participantCount: game!.BotGame.length,
           maxParticipants: GameService.getMaxBotsPerGame(),
           status: game!.status,
           prizePool: game!.prizePool,
@@ -248,11 +248,11 @@ export const AgentController = {
         data: {
           gameId: game.id,
           botId,
-          participantCount: updatedGame!.participants.length,
+          participantCount: updatedGame!.BotGame.length,
           maxParticipants: GameService.getMaxBotsPerGame(),
           status: updatedGame!.status,
           prizePool: updatedGame!.prizePool,
-          arena: updatedGame!.arena,
+          Arena: updatedGame!.Arena,
         },
       });
     } catch (error: any) {
@@ -390,7 +390,7 @@ export const AgentController = {
 
       const gameState = GameService.getGameState(gameId);
 
-      const rankings = game.participants
+      const rankings = game.BotGame
         .map((p) => {
           const finishTime = gameState?.botFinishTimes?.get(p.botId);
           const penaltyMs = p.collisions * 10 * 1000;
@@ -398,7 +398,7 @@ export const AgentController = {
 
           return {
             botId: p.botId,
-            username: p.bot.username,
+            username: p.Bot.username,
             position: p.position,
             collisions: p.collisions,
             eliminated: p.eliminated,
@@ -449,9 +449,9 @@ export const AgentController = {
       const botGames = await prisma.botGame.findMany({
         where: { botId },
         include: {
-          game: {
+          Game: {
             include: {
-              arena: { select: { name: true, tier: true } },
+              Arena: { select: { name: true, tier: true } },
             },
           },
         },
@@ -459,20 +459,20 @@ export const AgentController = {
       });
 
       const totalGames = botGames.length;
-      const wins = botGames.filter((bg) => bg.game.winnerId === botId).length;
+      const wins = botGames.filter((bg) => bg.Game.winnerId === botId).length;
       const eliminations = botGames.filter((bg) => bg.eliminated).length;
       const totalCollisions = botGames.reduce((sum, bg) => sum + bg.collisions, 0);
 
       // Recent games (last 10)
       const recentGames = botGames.slice(0, 10).map((bg) => ({
         gameId: bg.gameId,
-        arena: bg.game.arena,
-        status: bg.game.status,
+        Arena: bg.Game.Arena,
+        status: bg.Game.status,
         position: bg.position,
         eliminated: bg.eliminated,
         eliminatedAt: bg.eliminatedAt,
         collisions: bg.collisions,
-        won: bg.game.winnerId === botId,
+        won: bg.Game.winnerId === botId,
         completionTime: bg.completionTime,
         createdAt: bg.createdAt,
       }));
@@ -492,7 +492,7 @@ export const AgentController = {
             winRate: totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0,
             eliminations,
             totalCollisions,
-            totalEarnings: agent.bot.totalEarnings,
+            totalEarnings: agent.Bot.totalEarnings,
           },
           recentGames,
         },

@@ -97,7 +97,7 @@ export const ContractService = {
       const participants = await arenaContract.getGameParticipants(gameId);
       return participants.map((addr: string) => ethers.getAddress(addr));
     } catch (error: any) {
-      logger.error(`Failed to get on-chain participants: ${error.message}`);
+      logger.error(`Failed to get on-chain BotGame: ${error.message}`);
       return [];
     }
   },
@@ -201,7 +201,7 @@ export const ContractService = {
     gameId: string
   ): Promise<{
     arenaId: string;
-    participants: string[];
+    BotGame: string[];
     winner: string;
     prizePool: string;
     status: number;
@@ -214,7 +214,7 @@ export const ContractService = {
       const info = await arenaContract.getGameInfo(gameId);
       return {
         arenaId: info.arenaId.toString(),
-        participants: info.participants,
+        BotGame: info.BotGame,
         winner: info.winner,
         prizePool: ethers.formatUnits(info.prizePool, 6),
         status: Number(info.status),

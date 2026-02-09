@@ -91,7 +91,7 @@ export const ArenaController = {
         },
         include: {
           _count: {
-            select: { participants: true },
+            select: { BotGame: true },
           },
         },
         orderBy: { createdAt: 'desc' },
@@ -104,14 +104,7 @@ export const ArenaController = {
           arenaId: arena.id,
           status: GameStatus.COMPLETED,
         },
-        include: {
-          winner: {
-            select: {
-              username: true,
-              walletAddress: true,
-            },
-          },
-        },
+
         orderBy: { endTime: 'desc' },
         take: 5,
       });
@@ -124,19 +117,14 @@ export const ArenaController = {
             id: g.id,
             status: g.status,
             prizePool: g.prizePool,
-            participantCount: g._count.participants,
+            participantCount: g._count.BotGame,
             maxParticipants: 10,
             createdAt: g.createdAt,
           })),
           recentGames: recentGames.map((g) => ({
             id: g.id,
             prizePool: g.prizePool,
-            winner: g.winner
-              ? {
-                  username: g.winner.username,
-                  walletAddress: g.winner.walletAddress,
-                }
-              : null,
+            winnerId: g.winnerId,
             endTime: g.endTime,
           })),
         },

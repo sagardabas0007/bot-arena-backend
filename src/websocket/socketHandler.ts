@@ -27,13 +27,13 @@ export function setupSocketHandler(io: Server): void {
   io.on('connection', (socket: Socket) => {
     logger.info(`Socket connected: ${socket.id}`);
 
-    socket.on('game:join', ({ gameId, botId }: { gameId: string; botId: string }) => {
+    socket.on('Game:join', ({ gameId, botId }: { gameId: string; botId: string }) => {
       if (!gameId || !botId) {
         emitError(io, socket.id, 'gameId and botId are required');
         return;
       }
 
-      socket.join(`game:${gameId}`);
+      socket.join(`Game:${gameId}`);
 
       if (!activeGames.has(gameId)) {
         activeGames.set(gameId, {
@@ -49,14 +49,14 @@ export function setupSocketHandler(io: Server): void {
 
       logger.info(`Bot ${botId} joined game ${gameId}. Players: ${room.players.size}`);
 
-      io.to(`game:${gameId}`).emit('game:player_joined', {
+      io.to(`Game:${gameId}`).emit('Game:player_joined', {
         gameId,
         botId,
         playerCount: room.players.size,
       });
     });
 
-    socket.on('game:ready', ({ gameId, botId }: { gameId: string; botId: string }) => {
+    socket.on('Game:ready', ({ gameId, botId }: { gameId: string; botId: string }) => {
       const room = activeGames.get(gameId);
       if (!room) return;
 
@@ -73,7 +73,7 @@ export function setupSocketHandler(io: Server): void {
       }
     });
 
-    socket.on('game:move', ({ gameId, botId, move }: {
+    socket.on('Game:move', ({ gameId, botId, move }: {
       gameId: string;
       botId: string;
       move: { fromX: number; fromY: number; toX: number; toY: number };
@@ -126,7 +126,7 @@ export function setupSocketHandler(io: Server): void {
             room.botPositions.delete(botId);
             logger.info(`Bot ${botId} disconnected from game ${gameId}`);
 
-            io.to(`game:${gameId}`).emit('game:player_left', {
+            io.to(`Game:${gameId}`).emit('Game:player_left', {
               gameId,
               botId,
               playerCount: room.players.size,

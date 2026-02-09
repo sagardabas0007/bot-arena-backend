@@ -96,7 +96,7 @@ export const GameController = {
         data: {
           gameId: game!.id,
           botId: bot.id,
-          participantCount: game!.participants.length,
+          participantCount: game!.BotGame.length,
           maxParticipants: GameService.getMaxBotsPerGame(),
           prizePool: game!.prizePool,
           status: game!.status,
@@ -150,18 +150,18 @@ export const GameController = {
         data: {
           id: game.id,
           arenaId: game.arenaId,
-          arena: game.arena,
+          Arena: game.Arena,
           status: game.status,
           currentLevel: game.currentLevel,
           prizePool: game.prizePool,
           winnerId: game.winnerId,
           startTime: game.startTime,
           endTime: game.endTime,
-          participants: game.participants.map((p) => ({
+          BotGame: game.BotGame.map((p) => ({
             botId: p.botId,
-            username: p.bot.username,
-            characterId: p.bot.characterId,
-            walletAddress: p.bot.walletAddress,
+            username: p.Bot.username,
+            characterId: p.Bot.characterId,
+            walletAddress: p.Bot.walletAddress,
             position: p.position,
             completionTime: p.completionTime,
             collisions: p.collisions,
@@ -236,7 +236,7 @@ export const GameController = {
       const gameState = GameService.getGameState(gameId);
 
       // Build rankings from participants
-      const rankings = game.participants
+      const rankings = game.BotGame
         .map((p) => {
           const finishTime = gameState?.botFinishTimes?.get(p.botId);
           const penaltyMs = p.collisions * 10 * 1000; // 10 second penalty per collision
@@ -244,9 +244,9 @@ export const GameController = {
 
           return {
             botId: p.botId,
-            username: p.bot.username,
-            characterId: p.bot.characterId,
-            walletAddress: p.bot.walletAddress,
+            username: p.Bot.username,
+            characterId: p.Bot.characterId,
+            walletAddress: p.Bot.walletAddress,
             position: p.position,
             collisions: p.collisions,
             eliminated: p.eliminated,
