@@ -9,13 +9,13 @@ import { ContractService } from './contractService';
 import { logger } from '../utils/logger';
 
 // Maximum bots per arena game
-const MAX_BOTS_PER_GAME = 10;
+const MAX_BOTS_PER_GAME = 5;
 
 // Elimination rules per level
 const ELIMINATION_MAP: Record<number, number> = {
-  1: 2, // Level 1: eliminate bottom 2 (10 -> 8)
-  2: 4, // Level 2: eliminate bottom 4 (8 -> 4)
-  3: 3, // Level 3: eliminate bottom 3 (4 -> 1 winner)
+  1: 1, // Level 1: eliminate bottom 1 (5 -> 4)
+  2: 2, // Level 2: eliminate bottom 2 (4 -> 2)
+  3: 1, // Level 3: eliminate bottom 1 (2 -> 1 winner)
 };
 
 // In-memory store for active game grids and bot positions
