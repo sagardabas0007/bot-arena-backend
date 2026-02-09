@@ -3,13 +3,13 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
-import { gameRoutes } from './routes/gameRoutes';
-import { arenaRoutes } from './routes/arenaRoutes';
-import { botRoutes } from './routes/botRoutes';
-import { statsRoutes } from './routes/statsRoutes';
-import { agentRoutes } from './routes/agentRoutes';
-import { errorHandler } from './middleware/errorHandler';
-import logger from './utils/logger';
+import { gameRoutes } from '../src/routes/gameRoutes';
+import { arenaRoutes } from '../src/routes/arenaRoutes';
+import { botRoutes } from '../src/routes/botRoutes';
+import { statsRoutes } from '../src/routes/statsRoutes';
+import { agentRoutes } from '../src/routes/agentRoutes';
+import { errorHandler } from '../src/middleware/errorHandler';
+import logger from '../src/utils/logger';
 
 const app = express();
 
