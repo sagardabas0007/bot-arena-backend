@@ -4,6 +4,9 @@ import { validateGameCreate, validateGameJoin, validateMove } from '../middlewar
 
 const router = Router();
 
+// GET /api/game/active OR /api/games/active - Get all active games
+router.get('/active', GameController.getActiveGames);
+
 // POST /api/game/create OR /api/games - Create a new game
 router.post('/create', validateGameCreate, GameController.createGame);
 router.post('/', validateGameCreate, GameController.createGame);

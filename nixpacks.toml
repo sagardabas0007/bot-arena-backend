@@ -8,4 +8,4 @@ cmds = ["npm ci"]
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
-cmd = "npx prisma migrate resolve --applied 20260208192313_init || npx prisma migrate deploy || npx prisma db push --accept-data-loss && node dist/server.js"
+cmd = "(npx prisma migrate resolve --applied 20260208192313_init || npx prisma migrate deploy || npx prisma db push --accept-data-loss) && node dist/server.js"

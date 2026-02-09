@@ -7,6 +7,29 @@ import { logger } from '../utils/logger';
 
 export const GameController = {
   /**
+   * GET /api/game/active
+   * Get all active (non-completed, non-cancelled) games, optionally filtered by arenaId.
+   */
+  async getActiveGames(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { arenaId } = req.query;
+      let games = await GameModel.getActiveGames();
+
+      if (arenaId) {
+        games = games.filter((g) => g.arenaId === String(arenaId));
+      }
+
+      res.status(200).json({
+        success: true,
+        data: games,
+      });
+    } catch (error: any) {
+      logger.error(`Get active games error: ${error.message}`);
+      next(error);
+    }
+  },
+
+  /**
    * POST /api/game/create
    * Create a new game session for an arena.
    */
